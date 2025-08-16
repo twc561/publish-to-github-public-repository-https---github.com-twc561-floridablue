@@ -1,4 +1,4 @@
-import '../models/statute.dart';
+import '../../../core/models/statute.dart';
 
 class LegalLibraryService {
   static final List<Statute> _statutes = [

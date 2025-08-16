@@ -1,4 +1,4 @@
-import '../models/training_scenario.dart';
+import '../../../core/models/training_scenario.dart';
 
 class TrainingService {
   static final List<TrainingScenario> _scenarios = [

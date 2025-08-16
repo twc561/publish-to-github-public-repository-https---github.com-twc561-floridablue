@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import '../models/statute.dart';
-import '../providers/recent_activity_provider.dart';
-import '../services/legal_library_service.dart';
+import '../../../core/models/statute.dart';
+import '../../../core/providers/recent_activity_provider.dart';
+import '../data/legal_library_service.dart';
 import 'statute_detail_screen.dart';
 
 class LegalLibraryScreen extends StatefulWidget {

@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import '../models/daily_fact.dart';
-import '../models/statute.dart';
-import '../providers/recent_activity_provider.dart';
-import '../services/ai_service.dart';
-import '../widgets/overflow_menu.dart';
-import 'statute_detail_screen.dart';
+import '../../../core/models/daily_fact.dart';
+import '../../../core/models/statute.dart';
+import '../../../core/providers/recent_activity_provider.dart';
+import '../../../core/services/ai_service.dart';
+import '../../legal_library/presentation/statute_detail_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -58,13 +57,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
         elevation: 0,
         backgroundColor: Colors.transparent,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.more_vert),
-            onPressed: () => showCustomOverflowMenu(context),
-            tooltip: 'Menu',
-          ),
-        ],
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -102,7 +94,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError || !snapshot.hasData) {
-          return const SizedBox.shrink(); // Don't show the card if there's an error
+          return const SizedBox.shrink();
         }
         
         final fact = snapshot.data!.text;
@@ -171,7 +163,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildHeroSearch(ThemeData theme) {
-    // ... (existing code)
     return Container(
       decoration: BoxDecoration(
         color: theme.cardColor,
@@ -215,7 +206,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildSearchField(ThemeData theme) {
-    // ... (existing code)
     return TextField(
       controller: _searchController,
       onSubmitted: (_) => _performSearch(),
@@ -240,7 +230,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildRecentActivitySection(ThemeData theme, RecentActivityProvider provider) {
-    // ... (existing code)
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

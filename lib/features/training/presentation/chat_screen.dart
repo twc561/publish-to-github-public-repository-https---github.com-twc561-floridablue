@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_ai/firebase_ai.dart';
-import '../models/chat_message.dart';
-import '../models/training_scenario.dart';
-import '../services/ai_service.dart';
+import '../../../core/models/chat_message.dart';
+import '../../../core/models/training_scenario.dart';
+import '../../../core/services/ai_service.dart';
 
 class ChatScreen extends StatefulWidget {
   final TrainingScenario scenario;

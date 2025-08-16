@@ -9,10 +9,13 @@ import '../models/statute.dart';
 import '../models/training_scenario.dart';
 
 class AiGenService {
+  // A standard model for general tasks
   final _model = FirebaseAI.googleAI().generativeModel(model: 'gemini-1.5-flash');
 
+  // A specifically configured model for the training scenarios
+  GenerativeModel? _trainingModel;
+
   Future<Statute> generateStatuteDetails(String statuteTitle) async {
-    // ... (existing code)
     final prompt = """
     For the Florida Statute related to "$statuteTitle", provide a detailed breakdown in a strict JSON format.
     The JSON object must have the following keys:
@@ -20,9 +23,7 @@ class AiGenService {
     - "severity": A string indicating the severity of the crime (e.g., "Second-Degree Felony").
     - "elements": A markdown formatted string listing the core elements of the crime. Use bullet points.
     - "examples": An array of two distinct, real-world examples of how this crime might be committed. Each example should be a string.
-
-    IMPORTANT: Ensure the output is ONLY the raw JSON object. Do not include any introductory text or markdown formatting like ```json.
-    Crucially, ensure that any double quotes within the string values are properly escaped with a backslash (\\").
+    IMPORTANT: Ensure the output is ONLY the raw JSON object. Do not include any introductory text or markdown formatting. Crucially, ensure that any double quotes within the string values are properly escaped with a backslash (\\").
     """;
     
     String rawResponse = '';
@@ -44,11 +45,11 @@ class AiGenService {
           examples: List<String>.from(jsonResponse['examples'] ?? []),
         );
       } else {
-        throw const FormatException("Could not find a valid JSON object in the response.");
+        throw FormatException("Could not find a valid JSON object in the AI's response.", rawResponse);
       }
     } on FormatException catch (e, s) {
       log('Failed to parse JSON response.', error: e, stackTrace: s, name: 'AiGenService');
-      throw FormatException("There was an issue decoding the AI's response.", rawResponse);
+      rethrow;
     } catch (e, s) {
       log('An unexpected error occurred', error: e, stackTrace: s, name: 'AiGenService');
       rethrow;
@@ -56,31 +57,43 @@ class AiGenService {
   }
 
   ChatSession startTrainingSession(TrainingScenario scenario) {
-    // ... (existing code)
-    final systemPrompt = """
-    You are an AI role-playing as a character in a law enforcement training scenario.
-    The user is a police officer, and their messages are what they are saying to you directly.
-    Your task is to respond in character based on their dialogue.
+    // Define the AI's core instructions. This is the new, more robust method.
+    final systemInstruction = Content.system(
+      """
+      You are an AI role-playing as a character in a law enforcement training scenario.
+      The user is a police officer. Their messages are what they are saying to you directly.
+      Your task is to respond IN-CHARACTER based on their dialogue.
 
-    SCENARIO: ${scenario.title}
-    SITUATION: ${scenario.description}
+      **DO NOT BREAK CHARACTER.**
+      **DO NOT act as an instructor or provide feedback.**
+      **DO NOT use phrases like "As the suspect..." or "The man responds...".**
+      **Just speak as the character.**
 
-    YOUR BEHAVIOR:
-    - BE a character, DO NOT be an instructor.
-    - Your responses must be short, conversational, and realistic.
-    - React to the officer's tone. If they are professional, you may de-escalate. If they are aggressive, you may become more agitated.
-    - Stay in character at all times. Do not break the fourth wall or mention that this is a training scenario.
-    """;
+      Your behavior:
+      - Your responses must be short, conversational, and realistic.
+      - React to the officer's tone. If they are professional, you may de-escalate. If they are aggressive, you may become more agitated.
+      
+      SCENARIO: ${scenario.title}
+      SITUATION: ${scenario.description}
+      """
+    );
 
+    // Initialize the model with these locked-in instructions
+    _trainingModel = FirebaseAI.googleAI().generativeModel(
+      model: 'gemini-1.5-flash',
+      systemInstruction: systemInstruction,
+    );
+    
+    // The chat history now ONLY contains the AI's opening line.
     final initialHistory = [
-      Content('model', [TextPart(systemPrompt)]),
-      Content('model', [TextPart(scenario.initialPrompt)]),
+      Content.model([TextPart(scenario.initialPrompt)])
     ];
 
-    return _model.startChat(history: initialHistory);
+    return _trainingModel!.startChat(history: initialHistory);
   }
 
   Future<DailyFact> getDailyFact() async {
+    // ... (rest of the method remains the same)
     final date = DateFormat('yyyy-MM-dd').format(DateTime.now());
     final prompt = """
     Generate a single, interesting, and little-known "Did You Know?" fact related to Florida law, law enforcement procedures, or legal history.

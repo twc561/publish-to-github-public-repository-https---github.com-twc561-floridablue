@@ -2,8 +2,12 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import '../theme_provider.dart';
-import '../screens/settings_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../providers/theme_provider.dart';
+import '../../features/settings/presentation/settings_screen.dart';
+import '../../features/field_tools/presentation/fst_guide_screen.dart';
+import '../../features/field_tools/presentation/miranda_warning_screen.dart';
+import '../../features/search_guide/presentation/search_guide_screen.dart';
 
 class OverflowMenu extends StatelessWidget {
   const OverflowMenu({super.key});
@@ -11,7 +15,6 @@ class OverflowMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final themeProvider = Provider.of<ThemeProvider>(context);
 
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
@@ -38,40 +41,53 @@ class OverflowMenu extends StatelessWidget {
             const SizedBox(height: 20),
             _buildMenuItem(
               context: context,
-              icon: Icons.settings,
-              title: 'Settings',
+              icon: Icons.gavel_outlined,
+              title: 'Search & Seizure Guide',
               onTap: () {
-                Navigator.pop(context); // Close the menu first
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsScreen()));
+                Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const SearchGuideScreen()));
+              },
+            ),
+             _buildMenuItem(
+              context: context,
+              icon: Icons.directions_walk,
+              title: 'FST Guide',
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const FstGuideScreen()));
               },
             ),
             _buildMenuItem(
               context: context,
-              icon: themeProvider.themeMode == ThemeMode.dark ? Icons.light_mode : Icons.dark_mode,
-              title: themeProvider.themeMode == ThemeMode.dark ? 'Switch to Light Mode' : 'Switch to Dark Mode',
+              icon: Icons.record_voice_over_outlined,
+              title: 'Miranda Warning',
               onTap: () {
-                themeProvider.toggleTheme();
                 Navigator.pop(context);
-              },
-            ),
-            _buildMenuItem(
-              context: context,
-              icon: Icons.info_outline,
-              title: 'About',
-              onTap: () {
-                // Placeholder for About screen
-                Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const MirandaWarningScreen()));
               },
             ),
             const Divider(height: 20),
             _buildMenuItem(
               context: context,
-              icon: Icons.logout,
-              title: 'Logout',
-              color: Colors.redAccent,
-              onTap: () {
-                // Placeholder for Logout
+              icon: Icons.feedback_outlined,
+              title: 'Send Feedback',
+              onTap: () async {
+                final Uri emailLaunchUri = Uri(
+                  scheme: 'mailto',
+                  path: 'your.email@example.com', // TODO: Replace with your feedback email
+                  queryParameters: {'subject': 'Florida Blue Guide Feedback'},
+                );
+                await launchUrl(emailLaunchUri);
                 Navigator.pop(context);
+              },
+            ),
+            _buildMenuItem(
+              context: context,
+              icon: Icons.settings,
+              title: 'Settings',
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsScreen()));
               },
             ),
           ],

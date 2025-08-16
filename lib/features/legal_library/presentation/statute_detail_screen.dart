@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:provider/provider.dart';
-import '../models/statute.dart';
-import '../providers/recent_activity_provider.dart';
-import '../services/ai_service.dart';
+import '../../../core/models/statute.dart';
+import '../../../core/providers/recent_activity_provider.dart';
+import '../../../core/services/ai_service.dart';
 
 class StatuteDetailScreen extends StatefulWidget {
   final Statute statute;

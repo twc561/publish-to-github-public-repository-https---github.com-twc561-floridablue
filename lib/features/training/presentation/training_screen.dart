@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../models/training_scenario.dart';
-import '../services/training_service.dart';
+import '../../../core/models/training_scenario.dart';
+import '../data/training_service.dart';
 import 'chat_screen.dart';
 
 class TrainingScreen extends StatefulWidget {

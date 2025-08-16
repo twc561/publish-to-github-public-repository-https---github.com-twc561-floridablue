@@ -4,7 +4,9 @@ import 'package:myapp/main.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  testWidgets('Renders LoginScreen and navigates to DashboardScreen', (WidgetTester tester) async {
+  testWidgets('Renders LoginScreen and navigates to DashboardScreen', (
+    WidgetTester tester,
+  ) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(
       ChangeNotifierProvider(
@@ -38,6 +40,11 @@ void main() {
     await tester.pumpAndSettle(const Duration(seconds: 5));
 
     // Verify that the search results are displayed (at least one widget with some text)
-    expect(find.byWidgetPredicate((widget) => widget is Text && widget.data!.isNotEmpty), findsWidgets);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is Text && widget.data!.isNotEmpty,
+      ),
+      findsWidgets,
+    );
   });
 }
